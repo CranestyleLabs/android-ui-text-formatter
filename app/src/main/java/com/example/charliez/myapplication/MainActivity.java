@@ -214,6 +214,18 @@ public class MainActivity extends Activity
                         }
                     }
             );
+            Button italicsButton = (Button)rootView.findViewById(R.id.btnItalics);
+            italicsButton.setOnClickListener(
+                    new Button.OnClickListener() {
+                        public void onClick(View v) {
+                            formatText(R.id.action_italics);
+                        }
+                    }
+            );
+
+
+            // TODO: Figure out how to format the buttons to indicate whether a text selection meets
+            // the format criteria
 
             return rootView;
         }
@@ -226,34 +238,75 @@ public class MainActivity extends Activity
         }
 
         private void formatText(int actionID) {
-            // "v" is the button.  We need to get a reference to the control
+            switch(actionID) {
+                case R.id.action_bold:
+                    processStyleChange(Typeface.BOLD);
+                    break;
+                case R.id.action_italics:
+                    processStyleChange(Typeface.ITALIC);
+                    break;
+                case R.id.action_underline:
+                    // Not supported as a typeface.  I mean, who underlines, anyway?
+                    break;
+            }
+        }
+
+        /**
+         * Process changes for the selected text and the given style.  Will add, remove or split
+         * spans as necessary
+         * @param style The style that should be filtered.
+         */
+        private void processStyleChange(int style) {
             int startSelection=etx.getSelectionStart();
             int endSelection=etx.getSelectionEnd();
 
             Editable currentText = etx.getText();
 
-            switch(actionID) {
-                case R.id.action_bold:
-                    // Create a bold tag where the user's cursor is. (?!?)
-                    // Unfortunately this sets the typeface for the entire text block
-                    //editor.setTypeface(null, Typeface.BOLD);
-                    final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD); // Span to make text bold
-                    currentText.setSpan(bss, startSelection, endSelection, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                    break;
-                case R.id.action_italics:
-                    final StyleSpan iss = new StyleSpan(android.graphics.Typeface.ITALIC); // Span to make text italic
-                    currentText.setSpan(iss, startSelection, endSelection, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                    break;
-                case R.id.action_underline:
-                    // Not supported right now.  I mean, who underlines?
-                    break;
+            StyleSpan[] spans = currentText.getSpans(startSelection, endSelection, StyleSpan.class);
+
+            boolean isRemove = false;
+            if (spans != null) {
+                for (int i = 0; i < spans.length; i++) {
+                    StyleSpan span = spans[i];
+                    if (span.getStyle() == style) {
+                        int spanStart = currentText.getSpanStart(span);
+                        int spanEnd = currentText.getSpanEnd(span);
+
+                        // If the span is within the selected text, remove it
+                        if (spanStart >= startSelection && spanEnd <= endSelection) {
+                            currentText.removeSpan(span);
+                            isRemove = true;
+                        }
+
+                        // If the span extends past the beginning of the selection, but not beyond the end, resize the span
+                        if (spanStart < startSelection && spanEnd <= endSelection) {
+                            currentText.setSpan(span, spanStart, startSelection, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            isRemove = true;
+                        }
+
+                        // If the span extends past the end of the selection, but not before the start, resize the span
+                        if (spanStart >= startSelection && spanEnd > endSelection) {
+                            currentText.setSpan(span, endSelection, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            isRemove = true;
+                        }
+
+                        // If the span extends past both ends of the selection, split it
+                        if (spanStart < startSelection && spanEnd > endSelection) {
+                            // Set the span to the left
+                            currentText.setSpan(span, spanStart, startSelection, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            // Create a new span to the right
+                            span = new StyleSpan(style); // Span to make text bold
+                            currentText.setSpan(span, endSelection, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                            isRemove = true;
+                        }
+                    }
+                }
             }
 
-            // Put the text back in the control
-            etx.setText(currentText);
-
-            // place the cursor at the end of the text selection
-            etx.setSelection(endSelection);
+            if (!isRemove) {
+                final StyleSpan bss = new StyleSpan(style); // Span to make text bold
+                currentText.setSpan(bss, startSelection, endSelection, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
         }
     }
 
