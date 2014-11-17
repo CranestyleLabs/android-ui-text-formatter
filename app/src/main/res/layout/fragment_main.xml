@@ -22,7 +22,8 @@
         android:enabled="true"
         android:editable="false"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/btnBold" />
+        android:layout_below="@+id/btnBold"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.EditText" />
 
     <Button
         style="?android:attr/buttonStyleSmall"

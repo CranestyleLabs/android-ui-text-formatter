@@ -122,7 +122,7 @@ public class MainActivity extends Activity
         }
 
         if (id == R.id.action_paragraph) {
-            formatParagraph(50);
+            formatParagraph(1);
             return true;
         }
 
@@ -170,6 +170,19 @@ public class MainActivity extends Activity
 
     private void formatParagraph(int indentation) {
         EditText etx = (EditText) findViewById(R.id.editText);
+        // TODO: Make text size a setting, need to adjust here accordingly
+        TextAppearanceSpan style_char = new TextAppearanceSpan(etx.getContext(),
+                android.R.style.TextAppearance_DeviceDefault_Widget_EditText);
+        float textSize = style_char.getTextSize();
+
+        // indentF roughly corresponds to ems in dp after accounting for
+        // system/base font scaling, you'll need to tweak it
+
+        float indentF = (float)indentation;
+        int indent = (int) indentF;
+        if (textSize > 0) {
+            indent = (int) indentF * (int) textSize;
+        }
         Editable currentText = etx.getText();
         int endSelection=etx.getSelectionEnd();
 
@@ -184,7 +197,7 @@ public class MainActivity extends Activity
         }
 
         // Set the style for the entire text
-        ParagraphStyle para_style = new LeadingMarginSpan.Standard(indentation, 0);
+        ParagraphStyle para_style = new LeadingMarginSpan.Standard(indent, 0);
         currentText.setSpan(para_style, start, end-1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
         // Need to set the text to redraw the control, otherwise text can be clipped at the end of the line
