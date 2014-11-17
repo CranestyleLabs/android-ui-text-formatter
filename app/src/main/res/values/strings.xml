@@ -9,6 +9,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
+    <string name="action_paragraph">Paragraph</string>
     <string name="action_bold">Bold</string>
     <string name="action_italics">Italics</string>
     <string name="action_underline">Underline</string>

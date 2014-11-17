@@ -12,6 +12,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
+import android.text.style.CharacterStyle;
+import android.text.style.LeadingMarginSpan;
+import android.text.style.ParagraphStyle;
+import android.text.style.TextAppearanceSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -116,6 +121,11 @@ public class MainActivity extends Activity
             return true;
         }
 
+        if (id == R.id.action_paragraph) {
+            formatParagraph(50);
+            return true;
+        }
+
         switch(id) {
             case R.id.action_bold:
             case R.id.action_underline:
@@ -156,6 +166,35 @@ public class MainActivity extends Activity
 
         // place the cursor at the end of the text selection
         etx.setSelection(endSelection);
+    }
+
+    private void formatParagraph(int indentation) {
+        EditText etx = (EditText) findViewById(R.id.editText);
+        Editable currentText = etx.getText();
+        int endSelection=etx.getSelectionEnd();
+
+        // Remove current paragraph formatting
+        int start =0;
+        int end = currentText.length();
+        LeadingMarginSpan.Standard[] spans = currentText.getSpans(start, end-1, LeadingMarginSpan.Standard.class);
+        if (spans != null) {
+            for (int i = 0; i < spans.length; i++) {
+                currentText.removeSpan(spans[i]);
+            }
+        }
+
+        // Set the style for the entire text
+        ParagraphStyle para_style = new LeadingMarginSpan.Standard(indentation, 0);
+        currentText.setSpan(para_style, start, end-1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        // Need to set the text to redraw the control, otherwise text can be clipped at the end of the line
+        etx.setText(currentText);
+
+        // Put the cursor back where it was!
+        etx.setSelection(endSelection);
+
+        // TODO: Indent does not apply to new paragraphs, how to we fix this?
+
     }
 
     /**
@@ -201,7 +240,7 @@ public class MainActivity extends Activity
 
             // Set text field
             etx.setText(
-                    Html.fromHtml("<i>Hello there,</i> she thought, wishing she could format text from the UI.")
+                    Html.fromHtml("<i>Hello there,</i> she thought, wishing she could format text from the UI.<br/>Second paragraph, let's see how we fare with wrapping.<br/>Third paragraph, we're really on a roll now.")
             );
             etx.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -222,6 +261,31 @@ public class MainActivity extends Activity
                         }
                     }
             );
+
+            // Change paragraphs to match formatting
+            etx.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO: Create a fragment reference to the span to save searching
+                    // TODO: Figure out how to only format when the user hits Return
+                    // Get the paragraph span
+                    LeadingMarginSpan.Standard[] spans = s.getSpans(0, s.length(), LeadingMarginSpan.Standard.class);
+
+                    if (spans != null && spans.length > 0) {
+                        // Move the end
+                        s.setSpan(spans[0], 0, s.length() - 1, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    }
+                }
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    // Nothing
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    // Nothing
+                }
+            });
 
 
             // TODO: Figure out how to format the buttons to indicate whether a text selection meets
