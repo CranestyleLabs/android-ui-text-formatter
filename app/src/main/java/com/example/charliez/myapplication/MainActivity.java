@@ -122,6 +122,7 @@ public class MainActivity extends Activity
         }
 
         if (id == R.id.action_paragraph) {
+            // TODO: Make this a setting
             formatParagraph(1);
             return true;
         }
@@ -171,6 +172,8 @@ public class MainActivity extends Activity
     private void formatParagraph(int indentation) {
         EditText etx = (EditText) findViewById(R.id.editText);
         // TODO: Make text size a setting, need to adjust here accordingly
+        // Figure out how wide a character is based on the style.  This style was set
+        // on the control.  In the future, this will be user-configurable.
         TextAppearanceSpan style_char = new TextAppearanceSpan(etx.getContext(),
                 android.R.style.TextAppearance_DeviceDefault_Widget_EditText);
         float textSize = style_char.getTextSize();
@@ -183,6 +186,8 @@ public class MainActivity extends Activity
         if (textSize > 0) {
             indent = (int) indentF * (int) textSize;
         }
+
+        // Get current text and cursor position
         Editable currentText = etx.getText();
         int endSelection=etx.getSelectionEnd();
 
@@ -205,9 +210,6 @@ public class MainActivity extends Activity
 
         // Put the cursor back where it was!
         etx.setSelection(endSelection);
-
-        // TODO: Indent does not apply to new paragraphs, how to we fix this?
-
     }
 
     /**
