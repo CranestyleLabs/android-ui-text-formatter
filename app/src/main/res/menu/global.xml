@@ -1,4 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_bold" android:title="@string/action_bold"
+        android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_italics" android:title="@string/action_italics"
+        android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_underline" android:title="@string/action_underline"
+        android:orderInCategory="100" android:showAsAction="never" />
 </menu>
