@@ -1,7 +1,11 @@
 #Text Formatter Sample
 
 ##Introduction
-This application is a tech demo that shows how to format text in an EditText field. You can bold or italicize some or all of the text, as well as add paragraph indents. It also shows a NavigationDrawer (although the door doesn't contain anything yet).
+This application is a tech demo that shows how to format text in an EditText field. You can bold or italicize some or all of the text, as well as add paragraph indents. It also shows a NavigationDrawer (although the drawer doesn't contain anything yet).
+
+###To Do
+- Get sections to show up in drawer
+- Implement underlining
 
 ##Walkthrough
 1. Open the project in your Android development IDE of choice.
